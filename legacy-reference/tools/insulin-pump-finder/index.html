@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Insulin Pump Finder India 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --jade:#0a7c6e;
+  --jade-mid:#12a898;
+  --jade-pale:#e5f5f3;
+  --jade-ultra:#f0faf8;
+  --ink:#111c2a;
+  --ink-soft:#364556;
+  --ink-muted:#7b8fa0;
+  --ink-faint:#adc0ce;
+  --surface:#ffffff;
+  --canvas:#f6f9f8;
+  --border:#ddeae6;
+  --border-soft:#eef4f2;
+  --r-xl:24px;
+  --r-lg:18px;
+  --r-md:12px;
+  --r-sm:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{font-family:'Outfit',sans-serif;background:var(--canvas);color:var(--ink);min-height:100vh;overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 90% 70% at 5% -5%,rgba(10,124,110,.07) 0%,transparent 55%),
+    radial-gradient(ellipse 70% 60% at 95% 100%,rgba(18,168,152,.05) 0%,transparent 50%),
+    linear-gradient(175deg,#f6f9f8 0%,#f0faf8 60%,#f4f8ff 100%)}
+.bg-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.018;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.screen{display:none;position:relative;z-index:10;min-height:100vh}
+.screen.on{display:flex;flex-direction:column}
+@keyframes slideUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:slideUp .5s cubic-bezier(.22,1,.36,1) both}
+
+.serif{font-family:'Instrument Serif',serif}
+.serif-i{font-family:'Instrument Serif',serif;font-style:italic}
+
+/* LANDING */
+#land{align-items:center;justify-content:center;padding:52px 20px}
+.lw{max-width:500px;width:100%}
+.chip{display:inline-flex;align-items:center;gap:9px;background:var(--surface);
+  border:1px solid var(--border);border-radius:99px;padding:7px 18px 7px 8px;
+  box-shadow:0 1px 6px rgba(10,60,50,.07);margin-bottom:32px}
+.chip-d{width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(140deg,var(--jade),var(--jade-mid));
+  display:flex;align-items:center;justify-content:center}
+.chip-d svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.chip-t{font-size:.74rem;font-weight:700;color:var(--jade);letter-spacing:.05em;text-transform:uppercase}
+h1.lh{font-family:'Instrument Serif',serif;font-size:clamp(2.7rem,7.5vw,4.1rem);
+  line-height:1.06;color:var(--ink);margin-bottom:16px}
+h1.lh em{font-style:italic;color:var(--jade)}
+.ls{font-size:1rem;color:var(--ink-soft);line-height:1.72;margin-bottom:32px;max-width:430px}
+.lcard{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-xl);padding:24px;box-shadow:0 2px 14px rgba(10,60,50,.08);margin-bottom:24px}
+.lrow{display:flex;gap:14px;align-items:flex-start}
+.lico{width:40px;height:40px;border-radius:11px;background:var(--jade-pale);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.ltxt h4{font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.ltxt p{font-size:.81rem;color:var(--ink-soft);line-height:1.6}
+.sep{height:1px;background:var(--border-soft);margin:18px 0}
+.wbar{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.28);
+  border-radius:var(--r-sm);padding:12px 16px;font-size:.79rem;color:#6b3d00;line-height:1.58}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px}
+.bdg{background:var(--surface);border:1px solid var(--border);border-radius:99px;
+  padding:7px 15px;font-size:.77rem;font-weight:500;color:var(--ink-soft);
+  box-shadow:0 1px 4px rgba(10,60,50,.05)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border:none;border-radius:var(--r-lg);padding:14px 28px;
+  font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:600;
+  cursor:pointer;width:100%;transition:all .22s cubic-bezier(.22,1,.36,1);text-decoration:none}
+.btn-p{background:linear-gradient(135deg,var(--jade),var(--jade-mid));
+  color:#fff;box-shadow:0 4px 20px rgba(10,124,110,.28)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(10,124,110,.38)}
+.btn-p:active{transform:translateY(0)}
+.btn-g{background:transparent;color:var(--jade);border:1.5px solid var(--border);
+  font-size:.87rem;padding:11px 22px;width:auto}
+.btn-g:hover{background:var(--jade-pale);border-color:var(--jade)}
+.bico svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* QUIZ */
+#quiz{align-items:center;padding:28px 20px 56px}
+.qw{max-width:540px;width:100%}
+.qtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.qbrand{font-size:.7rem;font-weight:700;color:var(--jade);letter-spacing:.08em;text-transform:uppercase}
+.qnum{font-size:.77rem;color:var(--ink-muted);font-weight:500}
+.prog-rail{height:3px;background:var(--border);border-radius:99px;margin-bottom:40px;overflow:hidden}
+.prog-bar{height:3px;background:linear-gradient(90deg,var(--jade),var(--jade-mid));
+  border-radius:99px;transition:width .5s cubic-bezier(.22,1,.36,1)}
+.qcard{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-xl);padding:32px;box-shadow:0 8px 36px rgba(10,60,50,.11);margin-bottom:18px}
+.qemo{width:50px;height:50px;border-radius:14px;background:var(--jade-pale);
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:22px}
+.qh{font-family:'Instrument Serif',serif;font-size:1.42rem;line-height:1.22;
+  color:var(--ink);margin-bottom:10px}
+.qhint{font-size:.8rem;color:var(--ink-muted);line-height:1.62;margin-bottom:26px;
+  padding:10px 14px;background:var(--jade-ultra);border-radius:var(--r-sm);
+  border-left:3px solid var(--jade-mid)}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;align-items:center;gap:14px;border:1.5px solid var(--border-soft);
+  background:var(--surface);border-radius:var(--r-lg);padding:14px 18px;
+  cursor:pointer;transition:all .2s ease;user-select:none}
+.opt:hover{border-color:rgba(10,124,110,.38);background:var(--jade-ultra);transform:translateX(2px)}
+.opt.sel{border-color:var(--jade);background:var(--jade-pale);box-shadow:0 0 0 3px rgba(10,124,110,.07)}
+.opt-rb{width:20px;height:20px;border-radius:50%;border:2px solid #c5d5d0;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .18s}
+.opt.sel .opt-rb{border-color:var(--jade);background:var(--jade)}
+.opt.sel .opt-rb::after{content:'';width:8px;height:8px;border-radius:50%;background:#fff}
+.opt-l{font-size:.9rem;font-weight:600;color:var(--ink)}
+.opt-s{font-size:.75rem;color:var(--ink-muted);margin-top:3px}
+.nav-row{display:flex;gap:10px}
+.nav-row .btn-p{flex:1}
+
+/* RESULTS */
+#results{padding:40px 20px 80px;align-items:center}
+.rw{max-width:700px;width:100%}
+.rhdr{text-align:center;margin-bottom:44px}
+.rchip{display:inline-flex;align-items:center;gap:7px;background:var(--jade-pale);
+  border:1px solid rgba(10,124,110,.2);border-radius:99px;padding:6px 16px;
+  font-size:.72rem;font-weight:700;color:var(--jade);margin-bottom:20px;letter-spacing:.03em;text-transform:uppercase}
+.rchip svg{width:12px;height:12px;stroke:var(--jade);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.rh{font-family:'Instrument Serif',serif;font-size:clamp(2rem,5.5vw,2.9rem);
+  color:var(--ink);line-height:1.1;margin-bottom:12px}
+.rh em{font-style:italic;color:var(--jade)}
+.rsub{font-size:.88rem;color:var(--ink-soft);line-height:1.68;max-width:480px;margin:0 auto}
+
+/* AI Box */
+.aibox{background:linear-gradient(135deg,var(--jade-ultra),rgba(241,252,255,.8));
+  border:1.5px solid rgba(10,124,110,.16);border-radius:var(--r-xl);
+  padding:26px;margin-bottom:24px;position:relative;overflow:hidden}
+.aibox::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;
+  border-radius:50%;background:radial-gradient(circle,rgba(10,124,110,.06),transparent 70%)}
+.aihead{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.aipill{background:linear-gradient(135deg,var(--jade),var(--jade-mid));
+  color:#fff;font-size:.67rem;font-weight:700;border-radius:6px;
+  padding:3px 10px;letter-spacing:.05em;text-transform:uppercase}
+.ailbl{font-size:.79rem;font-weight:600;color:var(--ink-soft)}
+#aibody{font-size:.87rem;color:var(--ink-soft);line-height:1.78;position:relative;z-index:1}
+#aibody p+p{margin-top:12px}
+.thinking{display:flex;align-items:center;gap:12px;color:var(--ink-muted);font-size:.83rem}
+.dots span{display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:var(--jade);margin-right:3px;animation:blink 1.3s ease-in-out infinite}
+.dots span:nth-child(2){animation-delay:.22s}.dots span:nth-child(3){animation-delay:.44s}
+@keyframes blink{0%,80%,100%{opacity:.15;transform:scale(.7)}40%{opacity:1;transform:scale(1)}}
+
+/* Disclaimer */
+.disc{background:rgba(220,38,38,.04);border:1px solid rgba(220,38,38,.15);
+  border-radius:var(--r-md);padding:14px 18px;margin-bottom:28px;
+  font-size:.78rem;color:#7f1d1d;line-height:1.6}
+
+/* Cards */
+.cards{display:flex;flex-direction:column;gap:22px;margin-bottom:28px}
+.pc{background:var(--surface);border:1.5px solid var(--border);
+  border-radius:26px;overflow:hidden;box-shadow:0 2px 14px rgba(10,60,50,.08);
+  transition:transform .25s,box-shadow .25s}
+.pc:hover{transform:translateY(-4px);box-shadow:0 10px 40px rgba(10,60,50,.13)}
+.pc.star{border-color:var(--jade);box-shadow:0 6px 36px rgba(10,124,110,.15)}
+
+.pchd{padding:24px 28px 22px;position:relative;overflow:hidden}
+.pchd-bg{position:absolute;inset:0;opacity:.06}
+.pchd-orb{position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;opacity:.05}
+.pchd-in{position:relative;z-index:1}
+.pchd-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.pcs{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.b-top{background:linear-gradient(135deg,var(--jade),var(--jade-mid));
+  color:#fff;font-size:.68rem;font-weight:700;border-radius:6px;padding:3px 11px;letter-spacing:.04em}
+.b-soon{background:linear-gradient(135deg,#d97706,#f59e0b);
+  color:#fff;font-size:.68rem;font-weight:700;border-radius:6px;padding:3px 10px}
+.b-proto{background:rgba(220,38,38,.1);color:#9b1c1c;border:1px solid rgba(220,38,38,.22);
+  font-size:.68rem;font-weight:700;border-radius:6px;padding:3px 10px}
+.mring{background:var(--surface);border:1.5px solid var(--border);
+  border-radius:99px;padding:5px 14px;font-size:.77rem;font-weight:700;color:var(--jade)}
+.pcname{font-family:'Instrument Serif',serif;font-size:1.55rem;color:var(--ink);line-height:1.15;margin-bottom:5px}
+.pctag{font-size:.82rem;color:var(--ink-muted)}
+
+.pcbody{padding:0 28px 28px}
+.prow{display:flex;align-items:center;justify-content:space-between;
+  padding:16px 0;border-bottom:1px solid var(--border-soft);flex-wrap:wrap;gap:12px}
+.pnum{font-size:1.58rem;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.pnote{font-size:.72rem;color:var(--ink-muted);margin-top:2px}
+.ptags{display:flex;flex-wrap:wrap;gap:7px}
+.pt{font-size:.71rem;font-weight:600;border-radius:6px;padding:4px 11px}
+.pt-jade{background:var(--jade-pale);color:var(--jade)}
+.pt-green{background:#dcfce7;color:#166534}
+.pt-amber{background:#fef3c7;color:#92400e}
+.pt-red{background:#fee2e2;color:#991b1b}
+
+.slbl{font-size:.67rem;font-weight:700;color:var(--ink-muted);
+  letter-spacing:.09em;text-transform:uppercase;margin:20px 0 9px}
+.tagrow{display:flex;flex-wrap:wrap;gap:7px}
+.tg{background:#f3f6f8;border:1px solid #dde5ec;border-radius:6px;
+  padding:4px 11px;font-size:.73rem;color:var(--ink-soft)}
+.feats{display:flex;flex-direction:column;gap:8px}
+.feat{display:flex;gap:10px;font-size:.81rem;color:var(--ink-soft);line-height:1.55}
+.fa{color:var(--jade-mid);font-weight:700;flex-shrink:0;margin-top:1px}
+.pcgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:480px){.pcgrid{grid-template-columns:1fr}}
+.pcc h5{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:9px}
+.ph{color:#166534}.ch{color:#991b1b}
+.pcl{display:flex;flex-direction:column;gap:7px}
+.pci{display:flex;gap:8px;font-size:.79rem;color:var(--ink-soft);line-height:1.45}
+.ps{flex-shrink:0;font-size:.8rem;font-weight:700}
+.sy{color:#22c55e}.sn{color:#ef4444}
+
+.cta{margin-top:22px;display:flex;flex-direction:column;gap:9px}
+.cta-a{display:block;text-align:center;padding:13px 22px;border-radius:var(--r-md);
+  font-size:.87rem;font-weight:700;text-decoration:none;transition:all .2s;font-family:'Outfit',sans-serif}
+.c-jade{background:linear-gradient(135deg,var(--jade),var(--jade-mid));
+  color:#fff;box-shadow:0 4px 14px rgba(10,124,110,.2)}
+.c-jade:hover{box-shadow:0 6px 20px rgba(10,124,110,.32);transform:translateY(-1px)}
+.c-amb{background:linear-gradient(135deg,#d97706,#f59e0b);
+  color:#fff;box-shadow:0 4px 14px rgba(217,119,6,.17)}
+.c-amb:hover{box-shadow:0 6px 20px rgba(217,119,6,.27);transform:translateY(-1px)}
+.cnote{font-size:.72rem;color:var(--ink-muted);text-align:center;line-height:1.55}
+
+.dlbl{text-align:center;font-size:.7rem;font-weight:600;color:var(--ink-faint);
+  letter-spacing:.05em;text-transform:uppercase;margin:8px 0 4px;position:relative}
+.dlbl::before,.dlbl::after{content:'';position:absolute;top:50%;width:32%;height:1px;background:var(--border)}
+.dlbl::before{left:0}.dlbl::after{right:0}
+
+.actrow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:20px}
+.rft{text-align:center;font-size:.72rem;color:var(--ink-muted);
+  border-top:1px solid var(--border);padding-top:22px;line-height:2}
+.rft strong{color:var(--ink-soft)}
+
+@media(max-width:600px){
+  .qcard{padding:24px 18px}.pchd{padding:20px 18px 18px}.pcbody{padding:0 18px 22px}
+  .pnum{font-size:1.3rem}.pcname{font-size:1.3rem}
+}
+@media print{
+  .bg,.bg-grain,.aibox,.actrow,.btn{display:none!important}
+  .pc{box-shadow:none!important;border:1px solid #ccc!important;break-inside:avoid;margin-bottom:20px}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="bg-grain"></div>
+
+<!-- LANDING -->
+<div id="land" class="screen on">
+<div class="lw anim">
+  <div class="chip">
+    <div class="chip-d"><svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 9.414V19a2 2 0 01-2 2z"/></svg></div>
+    <span class="chip-t">🇮🇳 India 2026 · AI-assisted</span>
+  </div>
+  <h1 class="lh serif">Find your <em>perfect</em><br>insulin pump</h1>
+  <p class="ls">Answer 10 simple questions about your health, lifestyle, and budget. Get a personalised, AI-explained shortlist of pumps that are actually sold in India right now.</p>
+  <div class="lcard">
+    <div class="lrow">
+      <div class="lico">🩺</div>
+      <div class="ltxt">
+        <h4>How it works</h4>
+        <p>Our algorithm scores India-available pumps against your specific profile, then Claude AI writes a plain-language explanation of why each one suits you — no jargon, no guesswork.</p>
+      </div>
+    </div>
+    <div class="sep"></div>
+    <div class="wbar">⚠️ <strong>Not medical advice.</strong> This is an information tool only. Always consult your endocrinologist or diabetes care team before choosing an insulin pump.</div>
+  </div>
+  <div class="badges">
+    <span class="bdg">⏱ ~3 minutes</span>
+    <span class="bdg">🔒 Nothing stored</span>
+    <span class="bdg">🇮🇳 India-verified devices</span>
+    <span class="bdg">🤖 AI explanation</span>
+    <span class="bdg">🖨 Printable results</span>
+  </div>
+  <button class="btn btn-p" onclick="goQuiz()">
+    Start Questionnaire
+    <span class="bico"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg></span>
+  </button>
+  <p style="text-align:center;color:var(--ink-faint);font-size:.73rem;margin-top:11px">10 questions · Free · No login required</p>
+</div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="screen">
+<div class="qw anim">
+  <div class="qtop">
+    <span class="qbrand">Pump Finder</span>
+    <span id="qnum" class="qnum">1 / 10</span>
+  </div>
+  <div class="prog-rail"><div id="pbar" class="prog-bar" style="width:10%"></div></div>
+  <div class="qcard">
+    <div id="qemo" class="qemo"></div>
+    <h2 id="qh" class="qh serif"></h2>
+    <div id="qhint" class="qhint"></div>
+    <div id="qopts" class="opts"></div>
+  </div>
+  <div class="nav-row">
+    <button id="bbk" class="btn btn-g" onclick="goBack()" style="display:none">← Back</button>
+    <button id="bnx" class="btn btn-p" onclick="goNext()" disabled style="opacity:.38">
+      <span id="ntxt">Next</span>
+      <span class="bico"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg></span>
+    </button>
+  </div>
+  <p style="text-align:center;color:var(--ink-faint);font-size:.71rem;margin-top:14px">Answers never stored or shared</p>
+</div>
+</div>
+
+<!-- RESULTS -->
+<div id="results" class="screen">
+<div class="rw anim">
+  <div class="rhdr">
+    <div class="rchip">
+      <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+      Your personalised results
+    </div>
+    <h2 class="rh serif">Here are your<br><em>best matches</em></h2>
+    <p class="rsub">Ranked by how well each pump fits your specific needs, lifestyle, and budget.</p>
+  </div>
+
+  <div class="aibox">
+    <div class="aihead">
+      <span class="aipill">AI Summary</span>
+      <span class="ailbl">Personalised explanation of your results</span>
+    </div>
+    <div id="aibody">
+      <div class="thinking">
+        <div class="dots"><span></span><span></span><span></span></div>
+        Generating your personalised summary…
+      </div>
+    </div>
+  </div>
+
+  <div class="disc">⚠️ <strong>Important disclaimer:</strong> This tool is for information only — not medical advice. Prices are approximate, sourced from Indian distributor listings (early 2026), and may vary by city and supplier. Always consult a qualified endocrinologist or diabetologist before purchasing any insulin pump. Device availability and features can change without notice.</div>
+
+  <div id="cards" class="cards"></div>
+
+  <div class="actrow">
+    <button class="btn btn-g" style="width:auto;padding:11px 22px;font-size:.85rem" onclick="window.print()">🖨 Print / Save PDF</button>
+    <button class="btn btn-p" style="max-width:200px;font-size:.85rem;padding:11px 22px" onclick="goRestart()">↺ Start Over</button>
+  </div>
+
+  <div class="rft">
+    <p>Data verified <strong>March 2026</strong> · Only pumps with confirmed India sales presence are shown</p>
+    <p><strong>Not available in India:</strong> Omnipod 5 (Insulet) &amp; Tandem t:slim X2 — excluded from results</p>
+    <p>YpsoPump CamAPS FX closed-loop available in Europe, Australia &amp; NZ — <strong>not in India</strong></p>
+    <p style="margin-top:4px">Always verify current pricing and availability with your hospital or local distributor</p>
+  </div>
+</div>
+</div>
+
+<script>
+const QS=[
+  {id:'age',e:'👤',h:'What is your age group?',
+    hint:'Pump interface complexity, regulatory approvals, and caregiver monitoring features can vary by age — especially for children.',
+    opts:[{l:'Child — Under 13 years',v:'child'},{l:'Teen — 13 to 19 years',v:'teen'},{l:'Adult — 20 to 40 years',v:'adult_y'},{l:'Adult — 41 to 60 years',v:'adult_m'},{l:'Senior — 60 and above',v:'senior'}]},
+  {id:'dtype',e:'🩸',h:'What type of diabetes do you have?',
+    hint:'Insulin pumps are most often prescribed for Type 1 diabetes. They can also help Type 2 patients who need intensive insulin therapy — usually three or more injections per day.',
+    opts:[{l:'Type 1 Diabetes',s:'Insulin-dependent — often from childhood or young adulthood',v:'t1'},{l:'Type 2 — on Multiple Daily Injections',s:'Type 2 requiring 3 or more insulin doses per day',v:'t2'},{l:'Gestational / Planning Pregnancy',s:'Diabetes during pregnancy, or trying to conceive',v:'gest'},{l:'Other / Not sure',v:'other'}]},
+  {id:'inj',e:'💉',h:'How many insulin injections do you take per day?',
+    hint:'A pump replaces these injections with a continuous flow of insulin delivered through a tiny soft cannula placed under your skin — no repeated needle pricks.',
+    opts:[{l:'1–2 per day',s:'Long-acting only, or basal + one mealtime dose',v:'low'},{l:'3–4 per day',s:'Basal + mealtime boluses — standard MDI regimen',v:'med'},{l:'5 or more per day',s:'Intensive therapy with frequent corrections too',v:'high'},{l:'Not on insulin yet',s:'Currently on oral medication only',v:'none'}]},
+  {id:'hypo',e:'⚠️',h:'How often do you experience low blood sugar (hypoglycemia)?',
+    hint:'A "hypo" means blood sugar below 70 mg/dL — causing dizziness, shakiness, or sweating. Advanced pumps with Hybrid Closed-Loop can automatically reduce insulin before a low happens.',
+    opts:[{l:'Never or very rarely',s:'Less than once a month — generally well controlled',v:'rare'},{l:'Occasionally — 1 to 3 times per week',s:'Manageable lows; sometimes need glucose or juice',v:'mod'},{l:'Almost daily',s:'A serious concern — lows are disrupting my life',v:'freq'}]},
+  {id:'a1c',e:'📊',h:'What was your most recent HbA1c reading?',
+    hint:"HbA1c reflects your average blood sugar over 3 months. The general target for most adults is below 7% (53 mmol/mol). Pick the closest range if you don't have the exact number.",
+    opts:[{l:'Below 7% — well within target',v:'good'},{l:'7–8% — slightly above target',v:'mod'},{l:'8–10% — above target, needs improvement',v:'high'},{l:'Above 10% — significantly elevated',v:'vhigh'},{l:"I don't know my HbA1c",v:'dk'}]},
+  {id:'life',e:'🏃',h:'How would you describe your typical lifestyle?',
+    hint:'Very active users — sports, gym, swimming, frequent travel — often benefit from more discreet, waterproof pump designs.',
+    opts:[{l:'Mostly sedentary',s:'Desk job; limited regular physical activity',v:'sed'},{l:'Moderately active',s:'Regular walks, light exercise, household activities',v:'mod'},{l:'Very active',s:'Sports, gym, swimming, outdoor activities, frequent travel',v:'act'}]},
+  {id:'budget',e:'💰',h:'What is your one-time budget for the pump device?',
+    hint:'This is the device cost only. Consumables — infusion sets and CGM sensors — typically add ₹10,000–₹25,000 per month. Check whether your health insurance covers insulin pump therapy.',
+    opts:[{l:'Under ₹2 Lakh',s:'Looking for the most affordable option available',v:'low'},{l:'₹2 – ₹3.5 Lakh',s:'₹2,00,000 to ₹3,50,000',v:'med'},{l:'₹3.5 – ₹5 Lakh',s:'₹3,50,000 to ₹5,00,000',v:'high'},{l:'Above ₹5 Lakh / Insurance Covered',s:'Budget is not the primary constraint',v:'vhigh'}]},
+  {id:'ptype',e:'🔧',h:'Tubed or tubeless patch pump — do you have a preference?',
+    hint:'A tubed pump clips to your pocket or belt with thin tubing to a site on your skin. A patch (tubeless) pump sticks directly onto your skin — no external device, no visible tubing.',
+    opts:[{l:'Strongly prefer tubeless / patch',s:'Discretion is important — I want nothing external or visible',v:'patch'},{l:'Prefer tubed pump',s:'Fine with tubing — I want proven, established technology',v:'tubed'},{l:'No strong preference',s:'Open to either — show me the best fit',v:'open'}]},
+  {id:'auto',e:'🤖',h:'How important is automated insulin adjustment (Hybrid Closed-Loop)?',
+    hint:"Hybrid Closed-Loop means the pump reads your glucose every 5 minutes and automatically adjusts insulin — like a partial artificial pancreas. It reduces the mental burden of managing diabetes significantly.",
+    opts:[{l:'Very important',s:'I want as much automation as possible',v:'high'},{l:'Nice to have',s:"Appealing, but not my top priority",v:'med'},{l:'Not needed',s:"I'm comfortable managing insulin manually",v:'low'}]},
+  {id:'commit',e:'📚',h:'Are you ready to commit to learning pump therapy?',
+    hint:'Pumps have a learning curve — clinics typically provide 2–4 weeks of training. You also need to change the small infusion set (a soft tube under the skin) every 2–3 days to prevent infection.',
+    opts:[{l:'Yes — fully committed',s:'Ready to attend training and follow the maintenance routine',v:'yes'},{l:'Yes — with proper clinic support',s:'Happy to commit given thorough guidance from my hospital',v:'train'},{l:'Still deciding',s:"I'm still evaluating whether pump therapy is right for me",v:'unsure'}]},
+];
+
+const PUMPS={
+  m780g:{
+    name:'Medtronic MiniMed 780G',
+    tag:'Most Advanced Closed-Loop System in India',
+    price:'₹3,00,000 – ₹3,50,000',
+    pnote:'Distributor-listed prices in Pune, Hyderabad & Delhi — verify before purchase',
+    type:'Tubed · Hybrid Closed-Loop',avail:'Available Now',ac:'pt-green',
+    india:true,grad:'linear-gradient(140deg,#1d4ed8,#0ea5e9)',
+    feats:[
+      'SmartGuard™ automatically adjusts insulin every 5 minutes, 24/7, based on live CGM readings',
+      'Meal Detection Technology — auto-corrects if you miss or under-dose a meal bolus',
+      'Approved in India for ages 7 and above with Type 1 Diabetes (Medtronic India)',
+      'Simplera Sync CGM sensor — no fingerstick calibrations; easy peel-and-apply',
+      'Up to 5 family members can monitor your glucose in real time via CareLink™ Connect app',
+      'Waterproof to 3.6 m depth for 24 hours — safe for swimming and bathing',
+    ],
+    pros:['Only pump in India with full Hybrid Closed-Loop automation — greatest day-to-day relief','Proven distributor network in Delhi, Mumbai, Hyderabad, Pune, Chennai','SmartGuard significantly cuts overnight hypoglycemia risk','Caregiver remote monitoring — essential for children and elderly','Personalised glucose target settable down to 100 mg/dL'],
+    cons:['Highest upfront cost of India-available options','Tubed design — cannot match patch pump discretion','CGM consumables add ~₹15,000–22,000/month on top of device cost','Steepest learning curve — requires structured training sessions'],
+    bestFor:['Type 1 Diabetes (age 7+)','Frequent hypoglycemia','Maximum automation','Children & Teens','Pregnancy with T1D (doctor supervision)'],
+    ctaTxt:'Enquire at Medtronic India',ctaUrl:'https://www.medtronic-diabetes.in',ctaC:'c-jade',
+  },
+  ypso:{
+    name:'mylife YpsoPump',
+    tag:'Swiss-Engineered · Intuitive · App-Controlled',
+    price:'~ ₹3,50,000',
+    pnote:'Ypsomed India Pvt. Ltd. listed price (New Delhi) — verify with your local distributor',
+    type:'Tubed · OLED Touchscreen · Open-Loop',avail:'Available Now',ac:'pt-green',
+    india:true,grad:'linear-gradient(140deg,#0a7c6e,#12a898)',
+    feats:[
+      'OLED icon-based touchscreen — language-independent, extremely easy to navigate',
+      'mylife App: view glucose trend, deliver boluses from your smartphone without touching the pump',
+      'Compatible with FreeStyle Libre 2/3 and Dexcom G6 — CGMs widely available in India',
+      'IPX8 waterproof — up to 1 m for 60 minutes; safe for bathing',
+      '360° rotating infusion set (Orbit) — easy site changes in any position',
+      '⚠ CamAPS FX closed-loop system is NOT marketed in India (Europe/Australia/NZ only) — open-loop use here',
+    ],
+    pros:['Most beginner-friendly interface of any pump currently in India','Compact and lightweight (83g) — sits discreetly in a pocket','Works with FreeStyle Libre sensors — popular and more affordable in India','Established India presence through Ypsomed India Pvt. Ltd.','Infusion set and reservoir changed independently — flexible routine'],
+    cons:['No Hybrid Closed-Loop in India — CamAPS FX not marketed here','Must manually deliver all meal boluses yourself','Similar price to 780G but without auto-correction capability','Tubed — not suitable when maximum discretion is the top priority'],
+    bestFor:['First-time pump users','Seniors & less tech-savvy patients','Type 1 & Type 2 MDI','Moderate-to-high budget','Prefers simplicity over automation'],
+    ctaTxt:'Enquire at Ypsomed India',ctaUrl:'https://www.mylife-diabetescare.com',ctaC:'c-jade',
+  },
+  renu:{
+    name:'Renu MedTech InsuPatch',
+    tag:"🇮🇳 India's First Homegrown Patch Pump — Coming Soon",
+    price:'Expected well below ₹2 Lakh',
+    pnote:'Exact launch price not confirmed — still in prototype/trial stage as of late 2025',
+    type:'Tubeless Patch · Made in India',avail:'NOT YET AVAILABLE — Prototype Stage',ac:'pt-red',
+    india:false,comingSoon:true,grad:'linear-gradient(140deg,#d97706,#f59e0b)',
+    feats:[
+      'Tubeless — patches directly onto skin (abdomen, upper arm, thigh); no external device',
+      'No tubing, no clip-on unit — completely hidden under clothing at all times',
+      'Smartphone app controlled — bolus from your phone',
+      'Engineered for Indian conditions — climate, attire, and lifestyle considered',
+      'Targeting a price point at a fraction of imported pump costs',
+    ],
+    pros:['Maximum discretion — truly invisible under clothing','Expected to be the most affordable insulin pump in India when launched','Purpose-built for Indian users — local service network anticipated','No import dependency or foreign exchange markup'],
+    cons:['⚠ NOT commercially available as of March 2026 — prototype/trial stage only','No real-world long-term safety or effectiveness data yet','Exact price, CGM compatibility, and full features not officially confirmed','No Hybrid Closed-Loop planned in the initial release'],
+    bestFor:['Budget-conscious patients','Maximum discretion priority','Active lifestyle & sports','Children & Teens (once launched)','Early adopters willing to wait'],
+    ctaTxt:'Register Interest with Renu MedTech',ctaUrl:'https://www.renumedtech.com',ctaC:'c-amb',
+    ctaNote:'⏳ Not commercially available yet. Contact manufacturer to register interest and be notified at launch.',
+  }
+};
+
+let step=0,ans={};
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.remove('on');
+    const a=s.querySelector('.anim');
+    if(a){a.style.animation='none';}
+  });
+  const el=document.getElementById(id);
+  el.classList.add('on');
+  const a=el.querySelector('.anim');
+  if(a){void a.offsetWidth;a.style.animation='';}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goQuiz(){step=0;ans={};renderQ();show('quiz');}
+function goRestart(){show('land');}
+
+function renderQ(){
+  const q=QS[step],tot=QS.length;
+  document.getElementById('qnum').textContent=`${step+1} / ${tot}`;
+  document.getElementById('pbar').style.width=`${((step+1)/tot)*100}%`;
+  document.getElementById('qemo').textContent=q.e;
+  document.getElementById('qh').textContent=q.h;
+  document.getElementById('qhint').textContent=q.hint;
+  const el=document.getElementById('qopts');
+  el.innerHTML='';
+  q.opts.forEach(o=>{
+    const d=document.createElement('div');
+    d.className='opt'+(ans[q.id]===o.v?' sel':'');
+    d.onclick=()=>pick(q.id,o.v,d);
+    d.innerHTML=`<div class="opt-rb"></div><div><div class="opt-l">${o.l}</div>${o.s?`<div class="opt-s">${o.s}</div>`:''}</div>`;
+    el.appendChild(d);
+  });
+  document.getElementById('bbk').style.display=step>0?'inline-flex':'none';
+  document.getElementById('ntxt').textContent=step===tot-1?'See My Results →':'Next';
+  setNx(!!ans[q.id]);
+}
+
+function setNx(on){
+  const b=document.getElementById('bnx');
+  b.disabled=!on;b.style.opacity=on?'1':'.38';
+}
+
+function pick(qid,val,el){
+  ans[qid]=val;
+  document.querySelectorAll('#qopts .opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  setNx(true);
+}
+
+function goNext(){
+  if(!ans[QS[step].id])return;
+  if(step<QS.length-1){step++;renderQ();}
+  else{calcScore();show('results');}
+}
+function goBack(){if(step>0){step--;renderQ();}}
+
+function calcScore(){
+  const a=ans;
+  let s={m780g:0,ypso:0,renu:0};
+
+  if(a.budget==='vhigh'||a.budget==='high'){s.m780g+=35;s.ypso+=28;}
+  else if(a.budget==='med'){s.m780g+=20;s.ypso+=32;s.renu+=6;}
+  else{s.renu+=48;s.m780g+=4;s.ypso+=4;}
+
+  if(a.auto==='high'){s.m780g+=42;s.ypso+=5;}
+  else if(a.auto==='med'){s.m780g+=22;s.ypso+=26;s.renu+=6;}
+  else{s.ypso+=28;s.renu+=20;s.m780g+=4;}
+
+  if(a.ptype==='patch'){s.renu+=42;s.m780g-=14;s.ypso-=14;}
+  else if(a.ptype==='tubed'){s.m780g+=18;s.ypso+=18;s.renu-=18;}
+  else{s.m780g+=6;s.ypso+=6;s.renu+=4;}
+
+  if(a.hypo==='freq'){s.m780g+=32;s.ypso+=7;}
+  else if(a.hypo==='mod'){s.m780g+=16;s.ypso+=10;}
+
+  if(a.a1c==='vhigh'||a.a1c==='high'){s.m780g+=22;s.ypso+=10;}
+  else if(a.a1c==='mod'){s.m780g+=12;s.ypso+=12;}
+
+  if(a.life==='act'){s.renu+=24;s.m780g+=7;}
+  else if(a.life==='sed'){s.ypso+=14;s.m780g+=5;}
+  else{s.ypso+=8;s.m780g+=8;s.renu+=8;}
+
+  if(a.age==='child'||a.age==='teen'){s.renu+=14;s.m780g+=16;}
+  else if(a.age==='senior'){s.ypso+=22;s.m780g+=4;}
+
+  if(a.dtype==='t1'){s.m780g+=24;s.ypso+=12;}
+  else if(a.dtype==='gest'){s.m780g+=20;s.ypso+=10;}
+  else if(a.dtype==='t2'){s.ypso+=16;s.m780g+=10;}
+
+  if(a.commit==='unsure'){s.ypso+=16;s.m780g-=10;}
+  else if(a.commit==='yes'){s.m780g+=8;}
+
+  const mx=Math.max(...Object.values(s));
+  const pct={};
+  for(let k in s)pct[k]=Math.round(Math.min(98,Math.max(52,(s[k]/(mx+18))*100+26)));
+  const ranked=Object.entries(pct).sort((a,b)=>b[1]-a[1]);
+  renderCards(ranked);
+  getAI(a,ranked);
+}
+
+function renderCards(ranked){
+  const wrap=document.getElementById('cards');wrap.innerHTML='';
+  const avail=ranked.filter(([k])=>PUMPS[k].india);
+  const top2=avail.slice(0,2);
+  const showRenu=!top2.find(([k])=>k==='renu');
+  top2.forEach(([k,pct],i)=>wrap.appendChild(mkCard(k,pct,i===0)));
+  if(showRenu){
+    const dl=document.createElement('div');dl.className='dlbl';dl.textContent='Also on the horizon';
+    wrap.appendChild(dl);
+    const rp=ranked.find(([k])=>k==='renu')?.[1]||52;
+    wrap.appendChild(mkCard('renu',rp,false));
+  }
+}
+
+function mkCard(key,pct,top){
+  const p=PUMPS[key];
+  const el=document.createElement('div');
+  el.className='pc'+(top?' star':'');
+  const feats=p.feats.map(f=>`<div class="feat"><span class="fa">→</span>${f}</div>`).join('');
+  const pros=p.pros.map(x=>`<div class="pci"><span class="ps sy">✓</span>${x}</div>`).join('');
+  const cons=p.cons.map(x=>`<div class="pci"><span class="ps sn">✗</span>${x}</div>`).join('');
+  const tags=p.bestFor.map(t=>`<span class="tg">${t}</span>`).join('');
+  el.innerHTML=`
+    <div class="pchd">
+      <div class="pchd-bg" style="background:${p.grad}"></div>
+      <div class="pchd-orb" style="background:${p.grad}"></div>
+      <div class="pchd-in">
+        <div class="pchd-top">
+          <div class="pcs">
+            ${top?'<span class="b-top">⭐ Top pick for you</span>':''}
+            ${p.comingSoon?'<span class="b-soon">🔜 Coming Soon</span>':''}
+            ${!p.india?'<span class="b-proto">⚠ Not yet commercially available</span>':''}
+          </div>
+          <div class="mring">${pct}% match</div>
+        </div>
+        <div class="pcname serif">${p.name}</div>
+        <div class="pctag">${p.tag}</div>
+      </div>
+    </div>
+    <div class="pcbody">
+      <div class="prow">
+        <div><div class="pnum">${p.price}</div><div class="pnote">${p.pnote}</div></div>
+        <div class="ptags">
+          <span class="pt pt-jade">${p.type}</span>
+          <span class="pt ${p.ac}">${p.avail}</span>
+        </div>
+      </div>
+      <div class="slbl">Best suited for</div>
+      <div class="tagrow">${tags}</div>
+      <div class="slbl">Key features</div>
+      <div class="feats">${feats}</div>
+      <div class="slbl">Advantages &amp; limitations</div>
+      <div class="pcgrid">
+        <div class="pcc"><h5 class="ph">Advantages</h5><div class="pcl">${pros}</div></div>
+        <div class="pcc"><h5 class="ch">Limitations</h5><div class="pcl">${cons}</div></div>
+      </div>
+      <div class="cta">
+        <a href="${p.ctaUrl}" target="_blank" rel="noopener noreferrer" class="cta-a ${p.ctaC}">${p.ctaTxt} →</a>
+        ${p.ctaNote?`<p class="cnote">${p.ctaNote}</p>`:''}
+      </div>
+    </div>`;
+  return el;
+}
+
+async function getAI(a,ranked){
+  const topKey=ranked[0]?.[0];
+  const topName=topKey?PUMPS[topKey]?.name:'Medtronic MiniMed 780G';
+  const profile=`Patient profile:
+- Age: ${a.age} | Diabetes type: ${a.dtype} | Daily injections: ${a.inj}
+- Hypoglycemia frequency: ${a.hypo} | Most recent HbA1c: ${a.a1c}
+- Lifestyle: ${a.life} | Device budget: ${a.budget}
+- Pump type preference: ${a.ptype} | Automation importance: ${a.auto} | Commitment level: ${a.commit}
+
+Verified India pump facts (March 2026):
+1. Medtronic MiniMed 780G — Tubed, full Hybrid Closed-Loop (SmartGuard), India-approved for ages 7+, ~₹3–3.5L, available from distributors in Delhi/Mumbai/Hyderabad/Pune/Chennai.
+2. mylife YpsoPump — Tubed, OLED touchscreen, OPEN-LOOP ONLY in India (CamAPS FX closed-loop is NOT marketed in India — Europe/Aus/NZ only), ~₹3.5L, available via Ypsomed India Pvt Ltd New Delhi.
+3. Renu MedTech InsuPatch — Indian tubeless patch pump, NOT yet commercially available (prototype, Nov 2025), expected well below ₹2L.
+NOT available in India at all: Omnipod 5, Tandem t:slim X2. Do not mention these pumps.
+Top-ranked pump for this patient: ${topName}`;
+
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        system:`You are a warm, knowledgeable diabetes information assistant helping patients and their families in India understand insulin pump options.
+Write exactly 3 paragraphs using "you" and "your". Plain language — no medical jargon. Be specific and reference the patient's actual answers directly.
+
+Para 1: What stands out most about their profile and specific needs (mention HbA1c, hypo frequency, lifestyle, age group as relevant).
+Para 2: Why the top-ranked pump suits them, being concrete about features that match their answers. Include any important caveats (e.g. if YpsoPump, clarify it's open-loop only in India; mention monthly consumable costs of ₹10,000–25,000/month).
+Para 3: One or two specific things to raise with their doctor. End with an encouraging sentence about the next step.
+
+Strict rules:
+- NEVER mention Omnipod 5 or Tandem t:slim X2 — not available in India.
+- If recommending YpsoPump, clearly state CamAPS FX closed-loop is not available in India.
+- Always mention monthly consumable costs so they can budget.
+- No bullet points. No headers. Warm, clear prose only.
+- Do not give medical advice — inform and encourage them to consult their doctor.`,
+        messages:[{role:'user',content:`Write a personalised 3-paragraph summary.\n\n${profile}`}]
+      })
+    });
+    const data=await r.json();
+    const txt=data?.content?.[0]?.text||'';
+    if(txt){
+      const html=txt.trim().split(/\n\n+/).map(p=>`<p>${p.replace(/\n/g,' ')}</p>`).join('');
+      document.getElementById('aibody').innerHTML=html;
+    }else fallback(a,ranked);
+  }catch{fallback(a,ranked);}
+}
+
+function fallback(a,ranked){
+  const topKey=ranked[0]?.[0];
+  const topName=topKey?PUMPS[topKey]?.name:'Medtronic MiniMed 780G';
+  const ps=[];
+  if(a.hypo==='freq')
+    ps.push(`One of the most important signals in your profile is how frequently you experience low blood sugar. This is a strong clinical reason to consider Hybrid Closed-Loop automation — the Medtronic 780G's SmartGuard system can automatically reduce insulin when it senses your levels dropping, including overnight when lows are hardest to catch.`);
+  else if(a.auto==='high')
+    ps.push(`Since automation is very important to you, the Medtronic 780G stands out as the only pump currently available in India with a Hybrid Closed-Loop system — it reads your glucose every 5 minutes and adjusts insulin automatically, significantly reducing the day-to-day mental effort of managing your diabetes.`);
+  else if(a.budget==='low')
+    ps.push(`Your budget is below the cost of the two pumps currently available in India. The upcoming Renu MedTech InsuPatch is expected to be significantly more affordable, but it is not yet commercially available. Your doctor can advise on whether to wait for it or explore insurance coverage for existing pumps.`);
+  if(a.ptype==='patch')
+    ps.push(`You prefer a tubeless, patch-style design. Both pumps currently available in India — the Medtronic 780G and mylife YpsoPump — are tubed. The InsuPatch from Renu MedTech will be India's first patch pump, so it may be worth tracking for when it launches.`);
+  ps.push(`Based on your answers, your top match is <strong>${topName}</strong>. Do keep in mind that pump consumables — infusion sets and CGM sensors — typically add ₹10,000–₹25,000 per month beyond the device cost, so plan your budget accordingly. Your next step is to bring these results to your endocrinologist, who can review your complete history and guide you through starting pump therapy.`);
+  document.getElementById('aibody').innerHTML=ps.map(p=>`<p style="margin-bottom:12px">${p}</p>`).join('');
+}
+
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('quiz').classList.contains('on'))return;
+  if((e.key==='Enter'||e.key==='ArrowRight')&&!document.getElementById('bnx').disabled)goNext();
+  if(e.key==='ArrowLeft')goBack();
+});
+</script>
+</body>
+</html>

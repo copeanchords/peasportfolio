@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsApp Chat Viewer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2128;
+    --surface3: #21262d;
+    --border: #30363d;
+    --accent: #25d366;
+    --accent2: #128c7e;
+    --accent-dim: rgba(37,211,102,0.12);
+    --text: #e6edf3;
+    --text-muted: #7d8590;
+    --text-dim: #484f58;
+    --bubble-out: #005c4b;
+    --bubble-in: #1c2128;
+    --bubble-out-text: #e9feee;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* === UPLOAD SCREEN === */
+  #upload-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    gap: 32px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #upload-screen::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(37,211,102,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    pointer-events: none;
+  }
+
+  .upload-icon {
+    width: 80px; height: 80px;
+    background: var(--accent-dim);
+    border: 2px solid var(--accent);
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+  }
+
+  .upload-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 2.4rem;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .upload-title span { color: var(--accent); }
+
+  .upload-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    text-align: center;
+    max-width: 420px;
+    line-height: 1.6;
+  }
+
+  .drop-zone {
+    width: 480px;
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    padding: 48px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface);
+    position: relative;
+  }
+
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .drop-zone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+
+  .drop-zone p { color: var(--text-muted); font-size: 0.9rem; margin-top: 8px; }
+  .drop-zone strong { color: var(--text); display: block; font-size: 1rem; margin-bottom: 4px; }
+
+  .media-note {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    max-width: 480px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .media-note strong { color: var(--text); }
+
+  /* === LOADING === */
+  #loading-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    gap: 20px;
+    background: var(--bg);
+  }
+  #loading-screen.show { display: flex; }
+  .loading-bar-wrap {
+    width: 320px;
+    height: 4px;
+    background: var(--surface3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .loading-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.1s;
+  }
+  .loading-label { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--text-muted); }
+
+  /* === MAIN APP === */
+  #app {
+    display: none;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  .app-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  .app-logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.3rem;
+    color: var(--accent);
+  }
+
+  .app-header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .stats-badge {
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .btn-reset {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-reset:hover { border-color: var(--text-muted); color: var(--text); }
+
+  .app-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 280px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .sidebar-section {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .date-inputs { display: flex; flex-direction: column; gap: 8px; }
+
+  .date-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .date-input-row label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    width: 28px;
+    flex-shrink: 0;
+  }
+
+  .date-input-row input[type=date] {
+    flex: 1;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .date-input-row input[type=date]:focus { border-color: var(--accent); }
+  .date-input-row input[type=date]::-webkit-calendar-picker-indicator {
+    filter: invert(0.5);
+    cursor: pointer;
+  }
+
+  .search-box { position: relative; }
+
+  .search-box input {
+    width: 100%;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    padding: 8px 10px 8px 32px;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-box input:focus { border-color: var(--accent); }
+  .search-box input::placeholder { color: var(--text-dim); }
+
+  .search-icon {
+    position: absolute;
+    left: 10px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-size: 13px;
+    pointer-events: none;
+  }
+
+  .contacts-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+  }
+
+  .contacts-list::-webkit-scrollbar { width: 4px; }
+  .contacts-list::-webkit-scrollbar-track { background: transparent; }
+  .contacts-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .contact-item:hover { background: var(--surface2); }
+  .contact-item.active { background: var(--accent-dim); }
+
+  .contact-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    color: var(--bg);
+  }
+
+  .contact-info { flex: 1; min-width: 0; }
+
+  .contact-name {
+    font-size: 0.88rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .contact-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  .contact-check {
+    color: var(--accent);
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .contact-item.active .contact-check { opacity: 1; }
+
+  .select-all-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    padding: 7px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+    margin-bottom: 8px;
+  }
+  .select-all-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .apply-btn {
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    color: #000;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 9px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.02em;
+  }
+  .apply-btn:hover { opacity: 0.85; }
+  .apply-btn:active { opacity: 0.7; }
+
+  /* Chat area */
+  .chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .chat-toolbar {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+
+  .chat-toolbar-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .msg-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+
+  .show-media-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .show-media-toggle:hover { border-color: var(--accent); color: var(--accent); }
+  .show-media-toggle.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
+
+  /* === VIRTUAL SCROLL CONTAINER === */
+  .messages-container {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .messages-container::-webkit-scrollbar { width: 6px; }
+  .messages-container::-webkit-scrollbar-track { background: transparent; }
+  .messages-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* paddingTop = offset to first visible row, paddingBottom = remaining scroll height.
+     No absolute positioning needed — scroll height is natural content height. */
+  #messages-viewport {
+    padding: 12px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-sizing: border-box;
+  }
+
+  .date-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .date-divider::before, .date-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .date-divider span {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    padding: 3px 10px;
+    background: var(--surface2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .msg-wrapper {
+    display: flex;
+    margin: 1px 0;
+  }
+
+  .msg-wrapper.out { justify-content: flex-end; }
+  .msg-wrapper.in { justify-content: flex-start; }
+
+  .bubble {
+    max-width: 65%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    position: relative;
+    word-break: break-word;
+    line-height: 1.5;
+  }
+
+  .msg-wrapper.out .bubble {
+    background: var(--bubble-out);
+    color: var(--bubble-out-text);
+    border-bottom-right-radius: 3px;
+  }
+
+  .msg-wrapper.in .bubble {
+    background: var(--bubble-in);
+    color: var(--text);
+    border-bottom-left-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  .bubble-sender {
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-bottom: 3px;
+    opacity: 0.85;
+  }
+
+  .bubble-text { font-size: 0.88rem; }
+
+  .bubble-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    opacity: 0.55;
+    text-align: right;
+    margin-top: 4px;
+  }
+
+  .msg-system {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    padding: 4px 12px;
+    font-style: italic;
+  }
+
+  .media-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 0.8rem;
+    font-style: italic;
+    color: inherit;
+    opacity: 0.7;
+  }
+
+  .media-upload-area {
+    background: var(--surface3);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .media-upload-area:hover { border-color: var(--accent); }
+  .media-upload-area input { display: none; }
+
+  .media-preview {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-top: 6px;
+    display: block;
+  }
+
+  img.media-preview { max-height: 200px; cursor: pointer; }
+  img.media-preview:hover { opacity: 0.9; }
+  video.media-preview { max-height: 200px; }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    gap: 12px;
+    font-size: 0.9rem;
+    padding: 60px 20px;
+  }
+
+  .empty-state .big { font-size: 3rem; }
+
+  #lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+  }
+  #lightbox.show { display: flex; }
+  #lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 8px; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  #messages-viewport { animation: fadeIn 0.12s ease both; }
+</style>
+</head>
+<body>
+
+<!-- UPLOAD SCREEN -->
+<div id="upload-screen">
+  <div class="upload-icon">💬</div>
+  <div>
+    <div class="upload-title">WhatsApp <span>Chat Viewer</span></div>
+    <p class="upload-subtitle" style="margin-top:8px">Import your exported chat backup and explore conversations with filters, search, and media support. Works with files of any size.</p>
+  </div>
+  <div class="drop-zone" id="drop-zone">
+    <input type="file" id="file-input" accept=".txt" multiple>
+    <strong>Drop your chat export here</strong>
+    <p>or click to browse — supports <code style="color:var(--accent)">_chat.txt</code> files exported from WhatsApp</p>
+  </div>
+  <div class="media-note">
+    <strong>📎 Large files?</strong> This viewer uses virtual scrolling — it handles files with 500k+ messages without any slowdown. Only the visible messages are rendered at any time.
+  </div>
+</div>
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <div class="upload-icon" style="font-size:28px">⏳</div>
+  <div class="loading-label" id="loading-label">Parsing messages…</div>
+  <div class="loading-bar-wrap">
+    <div class="loading-bar" id="loading-bar"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="app-header">
+    <div class="app-logo">💬 WA Viewer</div>
+    <span class="stats-badge" id="total-stats">0 messages</span>
+    <div class="app-header-right">
+      <button class="btn-reset" onclick="resetApp()">← New Import</button>
+    </div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Date Range</div>
+        <div class="date-inputs">
+          <div class="date-input-row">
+            <label>From</label>
+            <input type="date" id="date-from">
+          </div>
+          <div class="date-input-row">
+            <label>To</label>
+            <input type="date" id="date-to">
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Search</div>
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="Search messages…">
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <button class="apply-btn" id="apply-btn" onclick="applyFilters()">Apply Filters</button>
+      </div>
+      <div class="sidebar-section" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+        <div class="sidebar-label">Participants</div>
+        <button class="select-all-btn" id="select-all-btn" onclick="toggleSelectAll()">Select All</button>
+        <div class="contacts-list" id="contacts-list"></div>
+      </div>
+    </div>
+
+    <div class="chat-area">
+      <div class="chat-toolbar">
+        <span class="chat-toolbar-title" id="chat-title">Select a conversation</span>
+        <button class="show-media-toggle" id="media-toggle" onclick="toggleMediaMode()">📎 Show Media Only</button>
+        <span class="msg-count" id="msg-count"></span>
+      </div>
+      <div class="messages-container" id="messages-container">
+        <div id="messages-viewport">
+          <div class="empty-state">
+            <span class="big">💬</span>
+            <span>Select participants to start viewing messages</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script>
+// ===== STATE =====
+let allMessages = [];
+let filteredMessages = []; // cached filter result
+let participants = [];
+let selectedParticipants = new Set();
+let mediaFiles = {};
+let showMediaOnly = false;
+let myName = null;
+
+// Virtual scroll state
+const OVERSCAN = 15;      // extra rows to render above/below viewport
+let vsOffset = 0;
+let vsHeights = [];
+let vsPositions = [];
+let vsContainerH = 0;
+let scheduledRaf = null;
+
+// OPT 1: Cache colorForName — computed once per unique name, reused on every scroll
+const _colorCache = new Map();
+const AVATAR_COLORS = [
+  '#e74c3c','#e67e22','#f1c40f','#2ecc71','#1abc9c',
+  '#3498db','#9b59b6','#e91e63','#00bcd4','#ff5722'
+];
+function colorForName(name) {
+  if (_colorCache.has(name)) return _colorCache.get(name);
+  let h = 0;
+  for (let c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffffffff;
+  const color = AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+  _colorCache.set(name, color);
+  return color;
+}
+
+function initials(name) {
+  return name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0,2);
+}
+
+// ===== PARSING =====
+// Handles all WhatsApp export formats:
+//   [DD/MM/YYYY, HH:MM:SS] Sender: msg     (iOS, square brackets)
+//   DD/MM/YYYY, HH:MM - Sender: msg        (Android, no brackets)
+//   MM/DD/YY, H:MM AM/PM - Sender: msg     (US locale 12h)
+const LINE_REGEX = /^\[?(\d{1,2}[\/\.\-]\d{1,2}[\/\.\-]\d{2,4}),\s*(\d{1,2}:\d{2}(?::\d{2})?(?:\s?[AP]M)?)\]?\s*[-–]?\s*(.*)/i;
+
+function parseWhatsApp(text) {
+  const msgs = [];
+  const clean = text.replace(/[\u200e\u200f\u200b\ufeff]/g, '');
+  const lines = clean.split('\n');
+  let current = null;
+
+  for (let raw of lines) {
+    const line = raw.trim();
+    if (!line) continue;
+
+    const m = line.match(LINE_REGEX);
+    if (m) {
+      if (current) msgs.push(current);
+      const [, dateStr, timeStr, rest] = m;
+      const date = parseDate(dateStr);
+      const colonIdx = rest.indexOf(': ');
+      let sender, body;
+      if (colonIdx > 0 && colonIdx < 60) {
+        sender = rest.slice(0, colonIdx).trim();
+        body = rest.slice(colonIdx + 2).trim();
+      } else {
+        sender = 'System';
+        body = rest.trim();
+      }
+      // OPT 2: Pre-compute ALL derived display data at parse time, once.
+      // This means renderViewport never calls escHtml/renderBody/isoDate per scroll.
+      const dateKey = date ? isoDate(date) : 'unknown';
+      const bodyHTML = computeBodyHTML(body);         // 7 regex checks → done once
+      const senderEsc = escHtml(sender);              // 4 replaces → done once
+      const timeEsc = escHtml(timeStr);               // done once
+      const bodyLower = body.toLowerCase();           // for search filtering
+      const senderLower = sender.toLowerCase();
+      current = { date, dateKey, timeStr, timeEsc, sender, senderEsc, senderLower, body, bodyLower, bodyHTML };
+    } else if (current) {
+      // Continuation line: append to body and recompute derived fields
+      current.body += '\n' + line;
+      current.bodyHTML = computeBodyHTML(current.body);
+      current.bodyLower = current.body.toLowerCase();
+    }
+  }
+  if (current) msgs.push(current);
+  return msgs;
+}
+
+function parseDate(str) {
+  const parts = str.split(/[\/\.\-]/).map(Number);
+  if (parts.length < 3) return null;
+  let [a, b, c] = parts;
+  if (c < 100) c += 2000;
+  let day = a, month = b;
+  if (a > 12) { day = a; month = b; }
+  else if (b > 12) { day = b; month = a; }
+  const d = new Date(c, month - 1, day);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function formatDate(d) {
+  if (!d) return 'Unknown Date';
+  return d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'long', year:'numeric' });
+}
+
+function isoDate(d) {
+  if (!d) return '';
+  return d.toISOString().split('T')[0];
+}
+
+// ===== FILE HANDLING =====
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+function handleFiles(files) {
+  for (const f of files) {
+    if (f.name.endsWith('.txt')) {
+      showLoading('Reading file…', 10);
+      // FIX 2: Use streaming-friendly approach — read chunks if file is large
+      // For files up to ~200MB, readAsText is fine in modern browsers.
+      // The real bottleneck was DOM rendering, which we solve with virtual scroll.
+      const reader = new FileReader();
+      reader.onprogress = e => {
+        if (e.lengthComputable) setLoadingProgress(Math.round(e.loaded/e.total * 40));
+      };
+      reader.onload = e => {
+        setLoadingLabel('Parsing messages…');
+        setLoadingProgress(45);
+        // Defer parsing to next task so loading UI paints first
+        setTimeout(() => loadChat(e.target.result), 30);
+      };
+      reader.readAsText(f, 'UTF-8');
+      return; // only load first .txt
+    }
+  }
+  alert('Please select a WhatsApp .txt export file.');
+}
+
+function showLoading(label, pct) {
+  document.getElementById('upload-screen').style.display = 'none';
+  document.getElementById('loading-screen').classList.add('show');
+  setLoadingLabel(label);
+  setLoadingProgress(pct);
+}
+
+function setLoadingLabel(t) { document.getElementById('loading-label').textContent = t; }
+function setLoadingProgress(p) { document.getElementById('loading-bar').style.width = p + '%'; }
+
+function loadChat(text) {
+  setLoadingLabel('Parsing messages…');
+  setLoadingProgress(50);
+
+  // Use setTimeout slices so UI stays responsive during heavy work
+  setTimeout(() => {
+    allMessages = parseWhatsApp(text);
+
+    if (!allMessages.length) {
+      document.getElementById('loading-screen').classList.remove('show');
+      document.getElementById('upload-screen').style.display = 'flex';
+      alert('Could not parse this file. Make sure it is a WhatsApp exported _chat.txt file.');
+      return;
+    }
+
+    setLoadingProgress(70);
+    setLoadingLabel('Building participant list…');
+
+    setTimeout(() => {
+      const senderCounts = {};
+      for (const m of allMessages) {
+        if (m.sender !== 'System') {
+          senderCounts[m.sender] = (senderCounts[m.sender] || 0) + 1;
+        }
+      }
+      participants = Object.entries(senderCounts).sort((a,b) => b[1]-a[1]).map(([name, count]) => ({ name, count }));
+      myName = participants[0]?.name || null;
+
+      const dates = allMessages.map(m => m.date).filter(Boolean);
+      if (dates.length) {
+        const minDate = dates.reduce((a,b) => a < b ? a : b);
+        const maxDate = dates.reduce((a,b) => a > b ? a : b);
+        document.getElementById('date-from').value = isoDate(minDate);
+        document.getElementById('date-to').value = isoDate(maxDate);
+      }
+
+      selectedParticipants = new Set(participants.map(p => p.name));
+      document.getElementById('total-stats').textContent =
+        `${allMessages.length.toLocaleString()} messages · ${participants.length} participants`;
+
+      setLoadingProgress(90);
+      setLoadingLabel('Rendering…');
+
+      setTimeout(() => {
+        renderContacts();
+        applyFilters();
+
+        setLoadingProgress(100);
+        // CRITICAL: show #app FIRST so the container has real pixel dimensions,
+        // THEN init virtual scroll so clientHeight is non-zero
+        document.getElementById('loading-screen').classList.remove('show');
+        document.getElementById('app').style.display = 'flex';
+
+        // One more frame so the browser has laid out the flex container
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            initVirtualScroll();
+          });
+        });
+      }, 30);
+    }, 30);
+  }, 30);
+}
+
+// ===== CONTACTS =====
+function renderContacts() {
+  const list = document.getElementById('contacts-list');
+  list.innerHTML = '';
+  for (const p of participants) {
+    const div = document.createElement('div');
+    div.className = 'contact-item' + (selectedParticipants.has(p.name) ? ' active' : '');
+    div.onclick = () => toggleParticipant(p.name);
+    div.innerHTML = `
+      <div class="contact-avatar" style="background:${colorForName(p.name)}">${initials(p.name)}</div>
+      <div class="contact-info">
+        <div class="contact-name">${escHtml(p.name)}</div>
+        <div class="contact-count">${p.count.toLocaleString()} msgs</div>
+      </div>
+      <span class="contact-check">✓</span>
+    `;
+    list.appendChild(div);
+  }
+}
+
+function toggleParticipant(name) {
+  if (selectedParticipants.has(name)) selectedParticipants.delete(name);
+  else selectedParticipants.add(name);
+  renderContacts();
+  applyFilters();
+}
+
+function toggleSelectAll() {
+  if (selectedParticipants.size === participants.length) selectedParticipants.clear();
+  else selectedParticipants = new Set(participants.map(p => p.name));
+  renderContacts();
+  applyFilters();
+}
+
+// ===== FILTERING =====
+function applyFilters() {
+  const fromVal = document.getElementById('date-from').value;
+  const toVal = document.getElementById('date-to').value;
+  const fromDate = fromVal ? new Date(fromVal) : null;
+  const toDate = toVal ? new Date(toVal + 'T23:59:59') : null;
+  const search = document.getElementById('search-input').value.toLowerCase().trim();
+
+  // OPT 6: .filter() with early-exit conditions ordered by cheapest first
+  filteredMessages = allMessages.filter(m => {
+    if (m.sender !== 'System' && !selectedParticipants.has(m.sender)) return false;
+    if (m.date) {
+      if (fromDate && m.date < fromDate) return false;
+      if (toDate && m.date > toDate) return false;
+    }
+    // OPT 7: use pre-lowercased body (bodyLower stored on msg) instead of .toLowerCase() every filter
+    if (search && !m.bodyLower.includes(search) && !m.senderLower.includes(search)) return false;
+    if (showMediaOnly && !isMediaMsg(m)) return false;
+    return true;
+  });
+
+  document.getElementById('msg-count').textContent = filteredMessages.length.toLocaleString() + ' messages';
+
+  const selNames = [...selectedParticipants];
+  document.getElementById('chat-title').textContent =
+    selNames.length === 1 ? selNames[0] :
+    selNames.length > 1 ? selNames.length + ' participants' :
+    'No participants selected';
+
+  // OPT 8: Use Float32Array for position table — ~4x less memory than JS Array of numbers,
+  // better cache locality for the binary search on scroll
+  const n = filteredMessages.length;
+  vsHeights = new Float32Array(n).fill(ITEM_HEIGHT);
+  buildPositions();
+  if (vsContainerH > 0) scheduleRender(true);
+}
+
+function isMediaMsg(m) {
+  // OPT 9: check bodyLower (already lowercase, already computed) — no new allocation
+  return /\.(jpg|jpeg|png|gif|mp4|mov|webp|opus|aac|mp3|pdf|webm)/.test(m.bodyLower) ||
+    /(media omitted|image omitted|audio omitted|video omitted|sticker omitted|file attached)/.test(m.bodyLower);
+}
+
+// ===== VIRTUAL SCROLL ENGINE =====
+// Uses paddingTop/paddingBottom on the viewport div to create fake scroll height.
+// No absolute positioning, no CSS transform, no layout-querying feedback loop.
+//
+// WHY THIS IS SMOOTH:
+//   Old approach: transform + separate spacer element + measureAndUpdate on every frame
+//   → caused a read(scrollHeight) → write(spacer) → layout invalidation loop every scroll
+//
+//   New approach: paddingTop = height above visible slice, paddingBottom = height below
+//   → single write per frame, zero layout reads, no feedback loop, no rAF chaining
+const ITEM_HEIGHT = 72;  // generous fixed estimate — small scrollbar error is fine;
+                          // jank from adaptive measurement is far worse
+
+function buildPositions() {
+  const n = vsHeights.length;
+  vsPositions = new Float32Array(n + 1);
+  vsPositions[0] = 0;
+  for (let i = 0; i < n; i++) vsPositions[i + 1] = vsPositions[i] + vsHeights[i];
+}
+
+function initVirtualScroll() {
+  const container = document.getElementById('messages-container');
+  vsContainerH = container.clientHeight;
+  vsOffset = 0;
+
+  // passive:true lets the browser scroll without waiting for JS
+  container.addEventListener('scroll', () => {
+    vsOffset = container.scrollTop;
+    scheduleRender(false);
+  }, { passive: true });
+
+  new ResizeObserver(() => {
+    vsContainerH = container.clientHeight;
+    scheduleRender(false);
+  }).observe(container);
+
+  scheduleRender(true);
+}
+
+function scheduleRender(scrollToBottom) {
+  if (scheduledRaf) cancelAnimationFrame(scheduledRaf);
+  scheduledRaf = requestAnimationFrame(() => {
+    scheduledRaf = null;
+    renderViewport(scrollToBottom);
+  });
+}
+
+function renderViewport(scrollToBottom) {
+  const container = document.getElementById('messages-container');
+  const viewport = document.getElementById('messages-viewport');
+  const totalRows = filteredMessages.length;
+
+  if (container.clientHeight > 0) vsContainerH = container.clientHeight;
+  if (vsContainerH <= 0) {
+    requestAnimationFrame(() => renderViewport(scrollToBottom));
+    return;
+  }
+
+  if (!totalRows) {
+    viewport.style.paddingTop = '12px';
+    viewport.style.paddingBottom = '12px';
+    viewport.innerHTML = '<div class="empty-state"><span class="big">🔍</span><span>No messages match your filters</span></div>';
+    return;
+  }
+
+  const totalH = vsPositions[totalRows];
+
+  if (scrollToBottom) {
+    vsOffset = Math.max(0, totalH - vsContainerH);
+    container.scrollTop = vsOffset;
+  }
+
+  // Binary search: first row whose bottom edge is at or below scroll offset
+  let lo = 0, hi = totalRows - 1;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (vsPositions[mid + 1] <= vsOffset) lo = mid + 1;
+    else hi = mid;
+  }
+
+  const startIdx = Math.max(0, lo - OVERSCAN);
+  let endIdx = lo;
+  while (endIdx < totalRows - 1 && vsPositions[endIdx] < vsOffset + vsContainerH) endIdx++;
+  endIdx = Math.min(totalRows - 1, endIdx + OVERSCAN);
+
+  // paddingTop  = total height of rows before the visible slice
+  // paddingBottom = total height of rows after the visible slice
+  // Together they make the container scroll height correct without any extra DOM nodes
+  const padTop = vsPositions[startIdx];
+  const padBottom = Math.max(0, totalH - vsPositions[endIdx + 1]);
+
+  const search = document.getElementById('search-input').value.trim();
+  const isGroup = participants.length > 2;
+  let html = '';
+  let lastDateStr = startIdx > 0 ? (filteredMessages[startIdx - 1].dateKey || 'unknown') : null;
+
+  for (let i = startIdx; i <= endIdx; i++) {
+    const msg = filteredMessages[i];
+
+    if (msg.dateKey !== lastDateStr) {
+      lastDateStr = msg.dateKey;
+      html += `<div class="date-divider"><span>${msg.date ? formatDate(msg.date) : 'Unknown Date'}</span></div>`;
+    }
+
+    if (msg.sender === 'System') {
+      html += `<div class="msg-system">${msg.bodyHTML}</div>`;
+      continue;
+    }
+
+    const isOut = msg.sender === myName;
+    const dir = isOut ? 'out' : 'in';
+    let senderHTML = '';
+    if (!isOut && isGroup) {
+      senderHTML = `<div class="bubble-sender" style="color:${colorForName(msg.sender)}">${msg.senderEsc}</div>`;
+    }
+    const bodyHTML = search ? highlightSafe(msg.bodyHTML, search) : msg.bodyHTML;
+    html += `<div class="msg-wrapper ${dir}"><div class="bubble">${senderHTML}<div class="bubble-text">${bodyHTML}</div><div class="bubble-meta">${msg.timeEsc}</div></div></div>`;
+  }
+
+  // Single write: set padding + content. Browser sees one coherent layout update.
+  viewport.style.paddingTop = padTop + 'px';
+  viewport.style.paddingBottom = padBottom + 'px';
+  viewport.innerHTML = html;
+}
+
+// ===== BODY HTML (pre-computed at parse time, not on every scroll) =====
+// OPT 2 cont: Called once per message during parsing, result stored on msg object.
+function computeBodyHTML(body) {
+  if (/image omitted|<image omitted>/i.test(body)) return renderMediaPlaceholder('🖼️', 'Image', 'image');
+  if (/video omitted|<video omitted>/i.test(body)) return renderMediaPlaceholder('🎥', 'Video', 'video');
+  if (/audio omitted|<audio omitted>/i.test(body)) return renderMediaPlaceholder('🎙️', 'Audio', 'audio');
+  if (/sticker omitted|<sticker omitted>/i.test(body)) return renderMediaPlaceholder('🎨', 'Sticker', 'image');
+  if (/<Media omitted>/i.test(body)) return renderMediaPlaceholder('📎', 'Media', 'any');
+  if (/\(file attached\)/i.test(body)) return renderMediaPlaceholder('📎', 'Attached file', 'any');
+  const fileMatch = body.match(/^(.+\.(jpg|jpeg|png|gif|mp4|mov|webp|opus|aac|mp3|pdf|webm))(\s*.*)?$/i);
+  if (fileMatch) {
+    const fname = fileMatch[1].trim();
+    const caption = fileMatch[3]?.trim() || '';
+    return renderMediaFile(fname, caption);
+  }
+  return escHtml(body).replace(/\n/g, '<br>');
+}
+
+function renderMediaPlaceholder(icon, label, type) {
+  const id = 'media_' + Math.random().toString(36).slice(2);
+  return `<span class="media-badge">${icon} ${label}</span>
+<div class="media-upload-area" onclick="openMediaPicker('${id}')">
+  <input type="file" id="${id}" accept="${acceptFor(type)}" onchange="handleMediaAttach(this,'${id}_preview')">
+  📎 Attach ${label.toLowerCase()} file…
+</div>
+<div id="${id}_preview"></div>`;
+}
+
+function renderMediaFile(fname, caption) {
+  const ext = fname.split('.').pop().toLowerCase();
+  const objectUrl = mediaFiles[fname];
+  if (objectUrl) {
+    if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
+      return `<img class="media-preview" src="${objectUrl}" alt="${escHtml(fname)}" onclick="openLightbox('${objectUrl}')">
+              ${caption ? '<br>' + escHtml(caption) : ''}`;
+    }
+    if (['mp4','mov','webm'].includes(ext)) {
+      return `<video class="media-preview" src="${objectUrl}" controls></video>
+              ${caption ? '<br>' + escHtml(caption) : ''}`;
+    }
+    if (['opus','aac','mp3'].includes(ext)) {
+      return `<audio controls src="${objectUrl}" style="margin-top:6px;width:100%"></audio>
+              ${caption ? '<br>' + escHtml(caption) : ''}`;
+    }
+  }
+  const id = 'media_' + fname.replace(/[^a-z0-9]/gi,'_');
+  return `<span class="media-badge">📎 ${escHtml(fname)}</span>
+<div class="media-upload-area" onclick="openMediaPicker('${id}')">
+  <input type="file" id="${id}" onchange="handleMediaAttachNamed(this,'${id}_preview','${escHtml(fname)}')">
+  📎 Attach file…
+</div>
+<div id="${id}_preview">${caption ? escHtml(caption) : ''}</div>`;
+}
+
+function acceptFor(type) {
+  if (type === 'image') return 'image/*';
+  if (type === 'video') return 'video/*';
+  if (type === 'audio') return 'audio/*';
+  return '*/*';
+}
+
+function openMediaPicker(id) { document.getElementById(id)?.click(); }
+
+function handleMediaAttach(input, previewId) {
+  const file = input.files[0]; if (!file) return;
+  const url = URL.createObjectURL(file);
+  const preview = document.getElementById(previewId); if (!preview) return;
+  preview.innerHTML = renderPreviewFromUrl(url, file.name);
+}
+
+function handleMediaAttachNamed(input, previewId, fname) {
+  const file = input.files[0]; if (!file) return;
+  const url = URL.createObjectURL(file);
+  mediaFiles[fname] = url;
+  const preview = document.getElementById(previewId); if (!preview) return;
+  preview.innerHTML = renderPreviewFromUrl(url, file.name);
+}
+
+function renderPreviewFromUrl(url, name) {
+  const ext = name.split('.').pop().toLowerCase();
+  if (['jpg','jpeg','png','gif','webp'].includes(ext))
+    return `<img class="media-preview" src="${url}" onclick="openLightbox('${url}')">`;
+  if (['mp4','mov','webm'].includes(ext))
+    return `<video class="media-preview" src="${url}" controls></video>`;
+  if (['opus','aac','mp3','m4a'].includes(ext))
+    return `<audio controls src="${url}" style="margin-top:6px;width:100%"></audio>`;
+  return `<a href="${url}" download="${escHtml(name)}" style="color:var(--accent);font-size:0.85rem">⬇ ${escHtml(name)}</a>`;
+}
+
+// FIX 4: Safe text highlight — only applies to text content outside HTML tags
+// by splitting on tag boundaries and only replacing in text segments.
+function highlightSafe(html, term) {
+  if (!term) return html;
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp('(' + escaped + ')', 'gi');
+  // Split into tag vs non-tag chunks, only replace in non-tag chunks
+  return html.replace(/(<[^>]*>)|([^<]+)/g, (match, tag, text) => {
+    if (tag) return tag; // preserve HTML tags untouched
+    return text.replace(regex, '<mark style="background:rgba(37,211,102,0.3);border-radius:2px;color:inherit">$1</mark>');
+  });
+}
+
+// ===== MEDIA MODE =====
+function toggleMediaMode() {
+  showMediaOnly = !showMediaOnly;
+  const btn = document.getElementById('media-toggle');
+  btn.classList.toggle('active', showMediaOnly);
+  btn.textContent = showMediaOnly ? '💬 Show All Messages' : '📎 Show Media Only';
+  applyFilters();
+}
+
+// ===== LIGHTBOX =====
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('show');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('show');
+}
+
+// ===== UTILS =====
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ===== RESET =====
+function resetApp() {
+  allMessages = []; filteredMessages = []; participants = [];
+  selectedParticipants = new Set(); mediaFiles = {};
+  showMediaOnly = false; myName = null;
+  vsHeights = []; vsPositions = [];
+  _colorCache.clear();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('upload-screen').style.display = 'flex';
+  document.getElementById('file-input').value = '';
+  document.getElementById('date-from').value = '';
+  document.getElementById('date-to').value = '';
+  document.getElementById('search-input').value = '';
+}
+
+// ===== EVENT LISTENERS =====
+// Filters now apply on button click. Also support Enter key in search/date fields.
+['date-from', 'date-to', 'search-input'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter') applyFilters();
+  });
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+</script>
+</body>
+</html>

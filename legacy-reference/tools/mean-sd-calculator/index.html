@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Combined Mean & SD Calculator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.4s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #718096;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    .toggle-container {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+      padding: 6px;
+      background: #f7fafc;
+      border-radius: 12px;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: #4a5568;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .toggle-btn:hover {
+      color: #2d3748;
+    }
+
+    .toggle-btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .input-section {
+      margin-bottom: 24px;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #4a5568;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    .input-label {
+      font-size: 12px;
+      color: #718096;
+      margin-bottom: 6px;
+      display: block;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      background: #ffffff;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    input::placeholder {
+      color: #cbd5e0;
+    }
+
+    .sample-size-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .sample-size-section.show {
+      opacity: 1;
+      max-height: 100px;
+    }
+
+    .calc-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      margin-top: 28px;
+    }
+
+    .calc-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .calc-btn:active {
+      transform: translateY(0);
+    }
+
+    .result-container {
+      margin-top: 28px;
+      padding: 24px;
+      background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+      border-radius: 16px;
+      border: 2px solid #c7d2fe;
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .result-container.show {
+      display: block;
+    }
+
+    .result-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #5b21b6;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .result-item {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .result-label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .result-value {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .error-message {
+      margin-top: 12px;
+      padding: 12px;
+      background: #fee;
+      border: 1px solid #fcc;
+      border-radius: 8px;
+      color: #c33;
+      font-size: 14px;
+      display: none;
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .formula-info {
+      margin-top: 20px;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+    }
+
+    .formula-info summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: #4a5568;
+      font-size: 14px;
+      user-select: none;
+    }
+
+    .formula-info p {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #718096;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 28px 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .input-grid, .result-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>📊 Combined Statistics Calculator</h1>
+  <div class="subtitle">Calculate combined mean and standard deviation</div>
+
+  <div class="toggle-container">
+    <button id="sameBtn" class="toggle-btn active">Same Sample Size</button>
+    <button id="diffBtn" class="toggle-btn">Different Sample Size</button>
+  </div>
+
+  <div class="input-section">
+    <div class="section-label">Group 1</div>
+    <div class="input-grid">
+      <div class="input-group">
+        <label class="input-label">Mean (μ₁)</label>
+        <input id="m1" type="number" step="any" placeholder="e.g., 75.5" />
+      </div>
+      <div class="input-group">
+        <label class="input-label">Std Dev (σ₁)</label>
+        <input id="s1" type="number" step="any" placeholder="e.g., 10.2" />
+      </div>
+    </div>
+  </div>
+
+  <div class="input-section">
+    <div class="section-label">Group 2</div>
+    <div class="input-grid">
+      <div class="input-group">
+        <label class="input-label">Mean (μ₂)</label>
+        <input id="m2" type="number" step="any" placeholder="e.g., 82.3" />
+      </div>
+      <div class="input-group">
+        <label class="input-label">Std Dev (σ₂)</label>
+        <input id="s2" type="number" step="any" placeholder="e.g., 12.8" />
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-size-section" id="sampleSizeSection">
+    <div class="input-group">
+      <label class="input-label">Sample Size (n₁)</label>
+      <input id="n1" type="number" step="1" placeholder="e.g., 30" />
+    </div>
+    <div class="input-group">
+      <label class="input-label">Sample Size (n₂)</label>
+      <input id="n2" type="number" step="1" placeholder="e.g., 40" />
+    </div>
+  </div>
+
+  <div id="errorMessage" class="error-message"></div>
+
+  <button class="calc-btn" onclick="calculate()">Calculate Combined Statistics</button>
+
+  <div id="resultContainer" class="result-container">
+    <div class="result-title">Combined Results</div>
+    <div class="result-grid">
+      <div class="result-item">
+        <div class="result-label">Combined Mean</div>
+        <div class="result-value" id="meanResult">0.00</div>
+      </div>
+      <div class="result-item">
+        <div class="result-label">Combined Std Dev</div>
+        <div class="result-value" id="sdResult">0.00</div>
+      </div>
+    </div>
+  </div>
+
+  <details class="formula-info">
+    <summary>ℹ️ How it works</summary>
+    <p><strong>Same sample size:</strong> Uses pooled variance formula assuming equal group sizes.</p>
+    <p><strong>Different sample size:</strong> Uses weighted mean and pooled standard deviation accounting for different group sizes.</p>
+  </details>
+</div>
+
+<script>
+  let mode = "same";
+
+  const sameBtn = document.getElementById("sameBtn");
+  const diffBtn = document.getElementById("diffBtn");
+  const sampleSizeSection = document.getElementById("sampleSizeSection");
+  const errorMessage = document.getElementById("errorMessage");
+  const resultContainer = document.getElementById("resultContainer");
+
+  sameBtn.onclick = () => setMode("same");
+  diffBtn.onclick = () => setMode("different");
+
+  function setMode(m) {
+    mode = m;
+    if (m === "same") {
+      sameBtn.classList.add("active");
+      diffBtn.classList.remove("active");
+      sampleSizeSection.classList.remove("show");
+    } else {
+      diffBtn.classList.add("active");
+      sameBtn.classList.remove("active");
+      sampleSizeSection.classList.add("show");
+    }
+    hideError();
+    resultContainer.classList.remove("show");
+  }
+
+  function showError(message) {
+    errorMessage.textContent = message;
+    errorMessage.classList.add("show");
+    setTimeout(() => hideError(), 3000);
+  }
+
+  function hideError() {
+    errorMessage.classList.remove("show");
+  }
+
+  function calculate() {
+    hideError();
+    
+    const m1 = parseFloat(document.getElementById("m1").value);
+    const s1 = parseFloat(document.getElementById("s1").value);
+    const m2 = parseFloat(document.getElementById("m2").value);
+    const s2 = parseFloat(document.getElementById("s2").value);
+
+    if ([m1, s1, m2, s2].some(isNaN)) {
+      showError("⚠️ Please enter valid numbers for all mean and standard deviation fields");
+      return;
+    }
+
+    if (s1 < 0 || s2 < 0) {
+      showError("⚠️ Standard deviation cannot be negative");
+      return;
+    }
+
+    let mean, sd;
+
+    if (mode === "same") {
+      mean = (m1 + m2) / 2;
+      sd = Math.sqrt((Math.pow(s1, 2) + Math.pow(s2, 2)) / 2 + Math.pow(m1 - m2, 2) / 4);
+    } else {
+      const n1 = parseFloat(document.getElementById("n1").value);
+      const n2 = parseFloat(document.getElementById("n2").value);
+      
+      if ([n1, n2].some(isNaN)) {
+        showError("⚠️ Please enter valid sample sizes for both groups");
+        return;
+      }
+
+      if (n1 <= 0 || n2 <= 0) {
+        showError("⚠️ Sample sizes must be positive numbers");
+        return;
+      }
+
+      if (!Number.isInteger(n1) || !Number.isInteger(n2)) {
+        showError("⚠️ Sample sizes should be whole numbers");
+        return;
+      }
+
+      mean = (n1 * m1 + n2 * m2) / (n1 + n2);
+      sd = Math.sqrt(
+        ((n1 - 1) * Math.pow(s1, 2) +
+          (n2 - 1) * Math.pow(s2, 2) +
+          n1 * Math.pow(m1 - mean, 2) +
+          n2 * Math.pow(m2 - mean, 2)) /
+          (n1 + n2 - 1)
+      );
+    }
+
+    document.getElementById("meanResult").textContent = mean.toFixed(4);
+    document.getElementById("sdResult").textContent = sd.toFixed(4);
+    resultContainer.classList.add("show");
+  }
+
+  // Allow Enter key to calculate
+  document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      calculate();
+    }
+  });
+</script>
+
+</body>
+</html>
