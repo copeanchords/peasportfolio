@@ -176,7 +176,7 @@ function StatsPanel() {
 
 function Sidebar() {
   return (
-    <aside className="hidden w-[280px] shrink-0 flex-col gap-2 md:flex">
+    <aside className="hidden w-[280px] shrink-0 flex-col gap-2 overflow-y-auto md:flex">
       <nav className="rounded-lg bg-black px-2 py-4">
         <NavLink to="/" end className="mb-4 flex items-center gap-2 px-3 text-white no-underline">
           <BrandLogo />
@@ -221,13 +221,13 @@ function Sidebar() {
         </NavLink>
       </nav>
 
-      <div className="flex flex-1 flex-col overflow-hidden rounded-lg bg-black">
+      <div className="flex shrink-0 flex-col rounded-lg bg-black">
         <div className="flex items-center gap-3 px-5 py-4 text-[#b3b3b3]">
           <LibraryIcon />
           <span className="text-sm font-bold text-white">Your Library</span>
         </div>
 
-        <div className="flex-1 overflow-y-auto pb-4">
+        <div className="pb-4">
           <NavLink
             to="/lab"
             className={({ isActive }) =>
