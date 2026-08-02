@@ -6,6 +6,12 @@
 // Missing/invalid credentials degrade to `{ available: false }` rather than
 // throwing, so the frontend can fall back gracefully.
 
+// The Edge Runtime isn't Node.js — no @types/node globals are available here.
+// Vercel does provide `process.env` as a read-only shim for env vars in Edge
+// Functions specifically, so declare just that (not full Node types, which
+// would incorrectly imply APIs like `fs`/`Buffer` work here too).
+declare const process: { env: Record<string, string | undefined> }
+
 export const config = { runtime: 'edge' }
 
 interface SpotifyArtist {
