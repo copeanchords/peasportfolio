@@ -3,7 +3,6 @@ import { profile } from '../../data/profile'
 import { education } from '../../data/education'
 import { experience } from '../../data/experience'
 import { projects } from '../../data/projects'
-import { useSpotifyStats } from '../../hooks/useSpotifyStats'
 
 function VerifiedBadge() {
   return (
@@ -66,19 +65,7 @@ function HeroArt() {
   )
 }
 
-function StatsRow() {
-  const { stats, loading } = useSpotifyStats()
-
-  if (loading) return null
-
-  if (stats.available && stats.topGenres.length > 0) {
-    return (
-      <div className="mt-1 text-sm font-semibold text-[#e0e0e0]">
-        Top genres: <span className="text-white">{stats.topGenres.slice(0, 3).join(', ')}</span>
-      </div>
-    )
-  }
-
+function ReleaseStat() {
   const years = experience
     .flatMap((e) => [...e.dates.matchAll(/\d{4}/g)].map((m) => Number(m[0])))
     .filter((y) => !Number.isNaN(y))
@@ -165,7 +152,7 @@ export default function Home() {
           <h1 className="mt-3 font-spotify text-5xl font-black tracking-tight text-white sm:text-7xl md:text-8xl">
             {profile.name}
           </h1>
-          <StatsRow />
+          <ReleaseStat />
         </motion.div>
       </section>
 

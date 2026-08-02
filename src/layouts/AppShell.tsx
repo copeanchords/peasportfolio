@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { categories } from '../data/projects'
 import { profile } from '../data/profile'
 import { skillGroups } from '../data/skills'
+import { useSpotifyStats } from '../hooks/useSpotifyStats'
 
 const toolsGroup = skillGroups.find((g) => g.label === 'Tools')
 
@@ -95,15 +96,54 @@ function PlayIcon() {
   )
 }
 
-function BrandLogo() {
+function BrandLogo({ size = 32 }: { size?: number }) {
   return (
-    <svg viewBox="0 0 24 24" width="32" height="32">
+    <svg viewBox="0 0 24 24" width={size} height={size} className="shrink-0">
       <circle cx="12" cy="12" r="12" fill="#1db954" />
       <path d="M6.2 9.3c3.8-1.1 9.2-.8 12.4 1.1" fill="none" stroke="#000" strokeWidth={1.7} strokeLinecap="round" />
       <path d="M6.7 12.6c3.2-.9 8-.7 10.9 1" fill="none" stroke="#000" strokeWidth={1.6} strokeLinecap="round" />
       <path d="M7.3 15.7c2.7-.7 6.6-.6 9 .8" fill="none" stroke="#000" strokeWidth={1.4} strokeLinecap="round" />
     </svg>
   )
+}
+
+function MailIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#b3b3b3" strokeWidth={1.8} className="shrink-0">
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M3.5 7l8.5 6 8.5-6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function LinkedInIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" className="shrink-0">
+      <rect width="24" height="24" rx="5" fill="#0A66C2" />
+      <text x="12" y="16.5" textAnchor="middle" fontSize="11" fontWeight="700" fill="#fff" fontFamily="Arial, sans-serif">
+        in
+      </text>
+    </svg>
+  )
+}
+
+function LinkIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#b3b3b3" strokeWidth={1.8} className="shrink-0">
+      <path
+        d="M9 15l6-6M10 6l1-1a4 4 0 015.5 5.5l-1 1M14 18l-1 1a4 4 0 01-5.5-5.5l1-1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function ContactIcon({ label }: { label: string }) {
+  if (label === 'Email') return <MailIcon />
+  if (label === 'LinkedIn') return <LinkedInIcon />
+  if (label === 'Spotify') return <BrandLogo size={20} />
+  return <LinkIcon />
 }
 
 function playlistIcon(index: number) {
@@ -113,6 +153,25 @@ function playlistIcon(index: number) {
     'from-emerald-600 to-green-400',
   ]
   return gradients[index % gradients.length]
+}
+
+function StatsPanel() {
+  const { stats, loading } = useSpotifyStats()
+
+  if (loading || !stats.available || stats.topGenres.length === 0) return null
+
+  return (
+    <div className="rounded-lg bg-black px-5 py-4">
+      <div className="mb-3 text-xs font-bold tracking-wide text-[#b3b3b3] uppercase">Top Genres</div>
+      <div className="flex flex-wrap gap-1.5">
+        {stats.topGenres.map((genre) => (
+          <span key={genre} className="rounded-full bg-row px-2.5 py-1 text-xs text-[#e0e0e0]">
+            {genre}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 function Sidebar() {
@@ -215,17 +274,20 @@ function Sidebar() {
         </div>
       )}
 
-      <div className="rounded-lg bg-black px-5 py-4">
-        <div className="mb-3 text-xs font-bold tracking-wide text-[#b3b3b3] uppercase">Contact</div>
-        <div className="flex flex-col gap-1.5">
+      <StatsPanel />
+
+      <div className="rounded-lg bg-black px-3 py-4">
+        <div className="mb-1 px-2 text-xs font-bold tracking-wide text-[#b3b3b3] uppercase">Contact</div>
+        <div className="flex flex-col">
           {profile.contacts.map((c) => (
             <a
               key={c.label}
               href={c.href}
               target={c.href.startsWith('http') ? '_blank' : undefined}
               rel="noopener noreferrer"
-              className="text-sm text-[#e0e0e0] hover:text-white hover:underline"
+              className="flex items-center gap-3 rounded px-2 py-2.5 text-sm text-[#e0e0e0] transition-colors hover:bg-row-hover hover:text-white"
             >
+              <ContactIcon label={c.label} />
               {c.label}
             </a>
           ))}
