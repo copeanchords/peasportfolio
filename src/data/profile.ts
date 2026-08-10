@@ -13,7 +13,7 @@ export const profile = {
   aboutImageUrl: '/images/about.jpg' as string | null,
   // TODO(purvesh): resume was for content only — add the real Drive link here when ready.
   // The Download button only renders once this is non-null.
-  resumeUrl: "https://drive.google.com/file/d/1voPUNgBbA50gWZfsXO-4DZXhdMp-LKtY/view?usp=sharing",
+  resumeUrl: "https://drive.google.com/file/d/1L-OZz0sQiC550FHDQial2RIrTEEpGSp5/view?usp=sharing",
   // TODO(purvesh): confirm how you want the About stat callout framed (e.g. "2+ Years Experience",
   // "Shipping since 2024") — left unset so the callout stays hidden rather than guess at a number.
   statCallout: "1+ Years Experience",
